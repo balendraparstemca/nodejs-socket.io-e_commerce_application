@@ -1,0 +1,47 @@
+SIMPLE E COMMERCE WEB APPLICATION
+
+  JUST RUN  npm install inside server folder
+
+  fetch mobile.sql in your mysql database 
+  run localhost:8080
+  login page will come use  username  balendra@gmail.com password 123456   or username amit@gmail.com password 123123 for login as user
+  for admin  just use username "admin"  password "admin
+
+  for user after login  redirect to user dashboard  where all mobile item that are avaialble 
+  mobile product that quantity is 0 is appear as sold out  
+
+  user can select mobile product and add to cart  
+  user can check his selected item in cart 
+ and click order button to buy
+
+"inside work when user order product product will be checked whether that quantity of item available in database or not"
+  and inserted into database 
+
+after order user can check his all  order by clicking button "check my order"
+
+i have used socket.io with nodejs so data will be update at realtime  between user and admin   
+admin can reacieve oredr immediate  and can check detail of order 
+admin also can take action for order confirm or cancel
+when admin will udate order status confirm or cancel  
+status will be update real time in user orders 
+
+
+
+As a fresher i have tried my best and i know that i can do better if i will get opportunity to work under company guidence 
+
+i have used 
+html
+css 
+jquery
+nodejs
+socket.io
+mysql
+sessionstorage  
+
+
+ 
+
+
+
+
+  

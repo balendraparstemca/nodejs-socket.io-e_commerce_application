@@ -1,0 +1,444 @@
+<html>
+<head>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="/socket.io/socket.io.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="https:/maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+	var custmer=[];
+	 var socket = io();
+	 
+	   function logout()
+	   {
+	   sessionStorage.clear();
+	   window.location.href = "http://localhost:8080/";
+	   }
+	   
+	   
+	   function detail(id)
+	   {   document.getElementById('id01').style.display='block';
+	   var tabl='';
+			var total=0;
+	    console.log(id);
+		tabl='<tr><td><h6>order ID:<h6></td><td>'+ id +'</td></tr>';
+		 socket.emit('wantdetail',id);
+		 socket.on('gettingdetail',function(result){
+		      console.log(result);
+		  
+		  result.forEach((e,i)=>
+		  {
+		          total=total + e.price;
+		           var j=i+1;
+					tabl=tabl + "<tr><td>"+ j +"</td><td>"+ e.pname +"</td><td>"+ e.quantity +"</td><td>"+ e.price +"</td></tr>";
+		   
+		  })
+		  tabl=tabl + '<tr><td><h6>Total Amount:<h6></td><td>'+ total +'</td></tr>';
+           $("#order_details").html(tabl);
+          });
+		
+	  
+	   
+	  
+	   }
+		 
+		  function cancelstatus(id)
+		  {
+		  console.log('cancel'+id);
+		  socket.emit('adding','sold out',id);
+		  }
+		  
+		  function confirmstatus(id)
+		  {
+		     console.log('confirm'+id);
+		  socket.emit('adding','confirm',id);
+		  }
+	
+	
+    $(document).ready(function(){
+	
+	if(sessionStorage.loginId)
+	{
+    var u=sessionStorage.getItem('loginId');
+	if(u!=='admin')
+	{
+	  window.location.href = "http://localhost:8080/";
+	}
+	
+	}
+  else{
+	    window.location.href = "http://localhost:8080/";
+	
+	}
+	var table='';
+
+	
+	$.ajax({  
+                url:"http://localhost:8080/fetchorder",  
+                method:"GET",  
+                success:function(data)
+				{  
+					console.log(data);
+				   data.forEach((e,i)=>
+					{    
+		              var j=i+1;
+					table=table + "<tr><td>"+ j +"</td><td>"+ e.date +"</td><td>"+ e.status +"</td><td>"+ e.cust_name +"</td><td><button class='btn btn-success' onclick=detail(" + e.id + ") style='width:auto;'><i class='fa fa-bars'></i> Detail</button></td><td><button class='btn btn-primary' onclick=cancelstatus(" + e.id +")><i class='fa fa-trash'></i> cancel</button></td><td><button class='btn btn-warning' onclick=confirmstatus(" + e.id +")><i class='fa fa-folder'></i> Confirm</button></td> </tr>";
+		  
+					})
+					$("#show_order").html(table);
+				},
+				error:function(err)
+				{
+				console.log(err);
+				}
+				})
+				
+				///fetching all product
+				$.ajax({  
+                url:"http://localhost:8080/customer",  
+                method:"GET",  
+                success:function(data)
+				{  
+					custmer=data;
+					console.log(custmer);
+				   
+				},
+				error:function(err)
+				{
+				console.log(err);
+				}
+				})
+	
+	
+         
+		  
+		  
+          socket.on('refresh feed',function(msg){
+		  table='';
+		  msg.forEach((e,i)=>
+		  {
+		  
+		           var j=i+1;
+					table=table + "<tr><td>"+ j +"</td><td>"+ e.date +"</td><td>"+ e.status +"</td><td>"+ e.cust_name +"</td><td><button class='btn btn-success' onclick=detail(" + e.id + ") style='width:auto;'><i class='fa fa-bars'></i> Detail</button></td><td><button class='btn btn-primary' onclick=cancelstatus(" + e.id +")><i class='fa fa-trash'></i> cancel</button></td><td><button class='btn btn-warning' onclick=confirmstatus(" + e.id +")><i class='fa fa-folder'></i> Confirm</button></td> </tr>";
+		     
+		  })
+            $("#show_order").html(table);
+          });
+    });
+    </script>
+<style>
+/*
+** Style Simple Ecommerce Theme for Bootstrap 4
+** Created by T-PHP https://t-php.fr/43-theme-ecommerce-bootstrap-4.html
+*/
+.bloc_left_price {
+    color: #c01508;
+    text-align: center;
+    font-weight: bold;
+    font-size: 150%;
+}
+.category_block li:hover {
+    background-color: #007bff;
+}
+.category_block li:hover a {
+    color: #ffffff;
+}
+.category_block li a {
+    color: #343a40;
+}
+.add_to_cart_block .price {
+    color: #c01508;
+    text-align: center;
+    font-weight: bold;
+    font-size: 200%;
+    margin-bottom: 0;
+}
+.add_to_cart_block .price_discounted {
+    color: #343a40;
+    text-align: center;
+    text-decoration: line-through;
+    font-size: 140%;
+}
+.product_rassurance {
+    padding: 10px;
+    margin-top: 15px;
+    background: #ffffff;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+.product_rassurance .list-inline {
+    margin-bottom: 0;
+    text-transform: uppercase;
+    text-align: center;
+}
+.product_rassurance .list-inline li:hover {
+    color: #343a40;
+}
+.reviews_product .fa-star {
+    color: gold;
+}
+.pagination {
+    margin-top: 20px;
+}
+footer {
+    background: #343a40;
+    padding: 40px;
+}
+footer a {
+    color: #f8f9fa!important
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+  position: relative;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+
+</style>
+<head>
+<body>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Simple Ecommerce</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarsExampleDefault">
+
+
+                <button class="btn btn-success btn-sm ml-3" onclick="logout()" id="logout">
+                    <i class="fa fa-sign-out"></i> logout
+                    
+                </button>
+
+        </div>
+    </div>
+</nav>
+<section class="jumbotron text-center" style="background-image:url('https://belvg.com/blog/wp-content/uploads/2017/03/Modern-e-Commerce-Web-Design-Trends.-Part-2.gif');  background-size:cover;height:200px">
+    <div class="container">
+     </div>
+</section>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">Home</li>
+                    <li class="breadcrumb-item">Admin</li>
+					  <li class="breadcrumb-item">OrderDetail</li>
+
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="container">
+
+
+   <div class="table-responsive">          
+  <table class="table">
+    <thead>
+      <tr>
+        <th>OredrId</th>
+        <th>Order Date</th>
+        <th>Status</th>
+        <th>Oredr By customer id</th>
+		<th>details</th>
+		<th>action</th>
+        
+      </tr>
+    </thead>
+    <tbody id="show_order">
+      
+    </tbody>
+  </table>
+  </div>
+   
+   
+</div>
+
+ <!-- Modal -->
+  
+<!-- Footer -->
+<footer class="text-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-lg-4 col-xl-3">
+                <h5>About</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+                
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto">
+                <h5>Informations</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+              
+            </div>
+
+            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto">
+                <h5>Others links</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+               
+            </div>
+
+            <div class="col-md-4 col-lg-3 col-xl-3">
+                <h5>Contact</h5>
+                <hr class="bg-white mb-2 mt-0 d-inline-block mx-auto w-25">
+               
+            </div>
+            <div class="col-12 copyright mt-3">
+                <p class="float-left">
+                    <a href="#">Back to top</a>
+                </p>
+                </div>
+        </div>
+    </div>
+</footer>
+<div id="id01" class="modal">
+  
+ <form class="modal-content animate"  method="post">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+    </div>
+
+    <div class="container">
+        <div class="table-responsive">          
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>product name</th>
+        <th>price</th>
+		<th>quantity</th>
+		
+	 </tr>
+    </thead>
+    <tbody id="order_details">
+      
+    </tbody>
+  </table>
+  </div>
+    </div>
+
+   </form>
+</div>
+
+
+
+<script>
+  
+
+</script>
+</body>
+</html>
